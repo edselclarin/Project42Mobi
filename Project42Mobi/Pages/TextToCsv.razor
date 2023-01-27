@@ -1,0 +1,46 @@
+﻿@page "/texttocsv"
+
+@using Project42Mobi.Data
+@using Project42Mobi.Models
+@using Project42Mobi.Extension
+@inject ClipboardService ClipboardService
+
+<PageTitle>Text to CSV</PageTitle>
+
+<h1>Text to CSV</h1>
+
+<EditForm Model=@Td OnSubmit=@FormSubmitted>
+    <div class="form-group">
+        <label for="InputText">Input Text</label>
+        <InputText @bind-Value=Td.InputText class="form-control" id="InputText" />
+    </div>
+    <br />
+    <div class="form-group">
+        <label for="OutputText">Output Text</label>
+        <InputText @bind-Value=Td.OutputText class="form-control" id="OutputText" />
+        <label for="Result"><em>@Result</em></label>
+    </div>
+    <br />
+    <input type="submit" class="btn btn-primary" value="Convert"/>
+    <div class="form-group">
+    </div>
+</EditForm>
+
+@code {
+    TextData Td = new TextData();
+    string Result = String.Empty;
+
+    void FormSubmitted(EditContext editContext)
+    {
+        bool formIsValid = editContext.Validate();
+        if (formIsValid)
+        {
+            var td = (TextData)editContext.Model;
+            Td.OutputText = td.InputText.ToCSV();
+
+            ClipboardService.WriteTextAsync(Td.OutputText);
+
+            Result = "Copied to the clipboard.";
+        }
+    }
+}
