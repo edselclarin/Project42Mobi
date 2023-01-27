@@ -21,7 +21,6 @@ public static class MauiProgram
 #endif
 
 		// Add services to the container.
-		//builder.Services.AddSingleton<WeatherForecastService>();
 		builder.Services.AddSingleton<ClipboardService>();
 		builder.Services.AddSingleton<PasswordGeneratorService>();
 
