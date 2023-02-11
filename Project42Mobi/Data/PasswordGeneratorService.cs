@@ -5,29 +5,25 @@ namespace Project42Mobi.Data
 {
 	public class PasswordGeneratorService
 	{
-		public static string Generate()
+		public static async Task<string> Generate()
 		{
 			int numWords = 3;
 			int wordLength = 5;
 			string uri = $"https://random-word-api.vercel.app/api?words={numWords}&length={wordLength}&type=capitalized";
 
-			var req = WebRequest.Create(uri);
-			req.ContentType = "application/json";
-			req.Method = "GET";
-
-			var rsp = req.GetResponse();
-
-			using (var sr = new StreamReader(rsp.GetResponseStream()))
+			using (HttpClient client = new HttpClient())
+			using (HttpResponseMessage response = await client.GetAsync(uri))
+			using (HttpContent content = response.Content)
 			{
-				string jsonPayload = sr.ReadToEnd();
+				string jsonPayload = await content.ReadAsStringAsync();
 
-				string[] words = JsonConvert.DeserializeObject<string[]>(jsonPayload);
+				string[]? words = JsonConvert.DeserializeObject<string[]>(jsonPayload);
 
 				return BuildPassword(words);
 			}
 		}
 
-		private static string BuildPassword(string[] words)
+		private static string BuildPassword(string[]? words)
 		{
 			string pwd = String.Empty;
 
